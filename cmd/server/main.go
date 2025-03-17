@@ -1,9 +1,9 @@
 package main
 
 import (
-	"context"
 	"fmt"
 	"github.com/DEV-BC/go-rest-api2/internal/comment"
+	transportHTTP "github.com/DEV-BC/go-rest-api2/internal/controller/http"
 	"github.com/DEV-BC/go-rest-api2/internal/database"
 )
 
@@ -23,17 +23,10 @@ func Run() error {
 
 	cmtService := comment.NewService(db)
 
-	cmtService.CreateComment(
-		context.Background(),
-		comment.Comment{
-			ID:     "71c5d074-b6cf-11ec-b909-0242ac120002",
-			Slug:   "manuel-test",
-			Body:   "testing create method",
-			Author: "Hello from DevBC",
-		},
-	)
-	fmt.Println(cmtService.GetComment(context.Background(), "71c5d074-b6cf-11ec-b909-0242ac120002"))
-
+	httpHandler := transportHTTP.NewHandler(cmtService)
+	if err := httpHandler.Serve(); err != nil {
+		return err
+	}
 	return nil
 }
 

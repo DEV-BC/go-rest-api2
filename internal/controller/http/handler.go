@@ -11,9 +11,6 @@ import (
 	"time"
 )
 
-type CommentService interface {
-}
-
 type Handler struct {
 	Router  *mux.Router
 	Service CommentService
@@ -37,6 +34,12 @@ func (h *Handler) mapRoutes() {
 	h.Router.HandleFunc("/hello", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "Hello world")
 	})
+
+	h.Router.HandleFunc("/api/v1/comments", h.PostComment).Methods("POST")
+	h.Router.HandleFunc("/api/v1/comments/{id}", h.GetComment).Methods("GET")
+	h.Router.HandleFunc("/api/v1/comments/{id}", h.UpdateComment).Methods("PUT")
+	h.Router.HandleFunc("/api/v1/comments/{id}", h.DeleteComment).Methods("DELETE")
+
 }
 
 func (h *Handler) Serve() error {

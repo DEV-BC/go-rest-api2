@@ -1,0 +1,42 @@
+
+services:
+  pgDB:
+    image: postgres:latest
+    container_name: "cmt-database"
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    networks:
+      - fullstack
+    volumes:
+      - database_pg:/var/lib/postgresql/data
+
+
+  api:
+    build: .
+    container_name: "cmt-rest-api2"
+    environment:
+      DB_USERNAME: "postgres"
+      DB_PASSWORD: "postgres"
+      DB_DB: "postgres"
+      DB_HOST: "pgDB"
+      DB_TABLE: "postgres"
+      DB_PORT: "5432"
+      SSL_MODE: "disable"
+    ports:
+      - "8080:8080"
+    depends_on:
+      - pgDB
+    networks:
+      - fullstack
+
+volumes:
+  database_pg:
+
+networks:
+  fullstack:
+    driver: bridge
+

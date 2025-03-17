@@ -22,6 +22,9 @@ func NewHandler(service CommentService) *Handler {
 		Service: service,
 	}
 	h.Router = mux.NewRouter()
+	h.Router.Use(JSONMiddleware)
+	h.Router.Use(LoggingMiddleware)
+	h.Router.Use(TimeoutMiddleware)
 	h.mapRoutes()
 	h.Server = &http.Server{
 		Addr:    ":8080",
@@ -35,7 +38,7 @@ func (h *Handler) mapRoutes() {
 		fmt.Fprintf(w, "Hello world")
 	})
 
-	h.Router.HandleFunc("/api/v1/comments", h.PostComment).Methods("POST")
+	h.Router.HandleFunc("/api/v1/comments", JWTAuth(h.PostComment)).Methods("POST")
 	h.Router.HandleFunc("/api/v1/comments/{id}", h.GetComment).Methods("GET")
 	h.Router.HandleFunc("/api/v1/comments/{id}", h.UpdateComment).Methods("PUT")
 	h.Router.HandleFunc("/api/v1/comments/{id}", h.DeleteComment).Methods("DELETE")
